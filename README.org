@@ -42,9 +42,9 @@ add it to ~org-babel-load-languages~.
 
 * Example
 
-ob-uart can also be useful for tools like the Bus Pirate. The
-following example shows a temperature readout from an SHT21
-humidity & temperature sensor.
+ob-uart can also be useful for tools like the [[http://dangerousprototypes.com/docs/Bus_Pirate][Bus Pirate]]. The
+following example shows a temperature readout from an [[https://www.sensirion.com/sht21][SHT21]] humidity &
+temperature sensor.
 
 - set mode to I²C, 50 kHz
 
