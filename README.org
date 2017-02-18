@@ -1,0 +1,125 @@
+#+TITLE: ob-uart -- integrate UART communication into your org documents
+
+* Overview
+
+ob-uart is a wrapper around ~make-serial-process~ for org babel,
+providing integration of UART communication into org documents.
+
+* Purpose
+
+ob-uart is useful for communication with devices that use a simple,
+command based interface over UART, such as is often the case in
+embedded development.
+
+Using ob-uart allows using org-mode to test and document the
+interface, e.g.:
+
+#+BEGIN_SRC uart
+set_value_portb 3 1
+#+END_SRC
+
+#+RESULTS:
+: OK
+
+#+BEGIN_SRC uart
+get_adc0_voltage
+#+END_SRC
+
+#+RESULTS:
+: 0.778
+
+* Installation
+
+To use ob-uart, add the repository to your load path, load it and
+add it to ~org-babel-load-languages~.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/path/to/ob-uart/")
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((uart . t)))
+#+END_SRC
+
+* Example
+
+ob-uart can also be useful for tools like the Bus Pirate. The
+following example shows a temperature readout from an SHT21
+humidity & temperature sensor.
+
+- set mode to I²C, 50 kHz
+
+  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200
+  m 4 2
+  #+END_SRC
+
+  #+RESULTS:
+  : m 4 2
+  : I2C (mod spd)=( 0 1 )
+  : Ready
+  : I2C>
+
+- enable power supply and pull-up resistors
+
+  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200
+  WP
+  #+END_SRC
+
+  #+RESULTS:
+  : WP
+  : Power supplies ON
+  : Pull-up resistors ON
+  : I2C>
+
+- scan for devices
+
+  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200
+  (1)
+  #+END_SRC
+
+  #+RESULTS:
+  : (1)
+  : Searching I2C address space. Found devices at:
+  : 0x80(0x40 W) 0x81(0x40 R)
+  :
+  : I2C>
+
+- send command to trigger temperature measurement
+
+  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200
+  [0x80 0b11110011 %]
+  #+END_SRC
+
+  #+RESULTS:
+  : [0x80 0b11110011 %]
+  : I2C START BIT
+  : WRITE: 0x80 ACK
+  : WRITE: 0xF3 ACK
+  : DELAY 1ms
+  : I2C STOP BIT
+  : I2C>
+
+- get result data
+
+  #+NAME: sht21_data
+  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200 :cache yes
+  [0x81 r:3]
+  #+END_SRC
+
+  #+RESULTS[43d384c278126101882a82423eae8f83e4e43d62]: sht21_data
+  : [0x81 r:3]
+  : I2C START BIT
+  : WRITE: 0x81 ACK
+  : READ: 0x64  ACK 0x74  ACK 0xEA
+  : NACK
+  : I2C STOP BIT
+  : I2C>
+
+- calculate temperature
+
+  #+BEGIN_SRC python :var data=sht21_data :results output
+  bytes = [int(x, 16) for x in data.split("\n")[3][5:].split(" ACK ")]
+  print("%.1f" % (-46.85 + 175.72 * (bytes[0] * 256 + bytes[1]) / 2**16))
+  #+END_SRC
+
+  #+RESULTS:
+  : 22.1
