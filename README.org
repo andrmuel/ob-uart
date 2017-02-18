@@ -14,14 +14,14 @@ embedded development.
 Using ob-uart allows using org-mode to test and document the
 interface, e.g.:
 
-#+BEGIN_SRC uart
+#+BEGIN_SRC uart :exports both
 set_value_portb 3 1
 #+END_SRC
 
 #+RESULTS:
 : OK
 
-#+BEGIN_SRC uart
+#+BEGIN_SRC uart :exports both
 get_adc0_voltage
 #+END_SRC
 
@@ -48,7 +48,7 @@ humidity & temperature sensor.
 
 - set mode to I²C, 50 kHz
 
-  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200
+  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200 :exports both
   m 4 2
   #+END_SRC
 
@@ -60,7 +60,7 @@ humidity & temperature sensor.
 
 - enable power supply and pull-up resistors
 
-  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200
+  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200 :exports both
   WP
   #+END_SRC
 
@@ -72,7 +72,7 @@ humidity & temperature sensor.
 
 - scan for devices
 
-  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200
+  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200 :exports both
   (1)
   #+END_SRC
 
@@ -85,7 +85,7 @@ humidity & temperature sensor.
 
 - send command to trigger temperature measurement
 
-  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200
+  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200 :exports both
   [0x80 0b11110011 %]
   #+END_SRC
 
@@ -101,7 +101,7 @@ humidity & temperature sensor.
 - get result data
 
   #+NAME: sht21_data
-  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200 :cache yes
+  #+BEGIN_SRC uart :port /dev/buspirate :speed 115200 :cache yes :exports both
   [0x81 r:3]
   #+END_SRC
 
@@ -116,7 +116,7 @@ humidity & temperature sensor.
 
 - calculate temperature
 
-  #+BEGIN_SRC python :var data=sht21_data :results output
+  #+BEGIN_SRC python :var data=sht21_data :results output :exports both
   bytes = [int(x, 16) for x in data.split("\n")[3][5:].split(" ACK ")]
   print("%.1f" % (-46.85 + 175.72 * (bytes[0] * 256 + bytes[1]) / 2**16))
   #+END_SRC
