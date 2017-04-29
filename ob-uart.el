@@ -26,6 +26,10 @@
 ;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 ;; Boston, MA 02110-1301, USA.
 
+
+;;; Commentary:
+;;
+
 ;;; Code:
 (require 'ob)
 (require 'ob-ref)
@@ -54,7 +58,7 @@
 ;;;###aut
 (defun org-babel-execute:uart (body params)
   "Execute a block of Lemonbeat code with org-babel.
-  This function is called by `org-babel-execute-src-block'"
+This function is called by `org-babel-execute-src-block'"
   (message "executing UART source code block")
   (let* ((ienc (cdr (assoc :ienc params)))
 	 (oenc (cdr (assoc :oenc params)))
@@ -72,7 +76,6 @@
     (make-serial-process
      :name process
      :buffer process-buffer
-     :port "/dev/ttyUSB0"
      :speed 115200
      :port port
      :speed speed
