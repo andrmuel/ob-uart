@@ -3,7 +3,7 @@
 ;; Copyright (C) Andreas Müller
 
 ;; Author: Andreas Müller
-;; Keywords: org-mode, UART, literate programming, reproducible development
+;; Keywords: tools, comm, org-mode, UART, literate programming, reproducible development
 ;; Homepage: https://www.0x7.ch
 ;; Version: 0.0.1
 
@@ -58,7 +58,9 @@
 ;;;###aut
 (defun org-babel-execute:uart (body params)
   "Execute a block of Lemonbeat code with org-babel.
-This function is called by `org-babel-execute-src-block'"
+This function is called by `org-babel-execute-src-block'
+Argument BODY content to send.
+Argument PARAMS UART communication parameters."
   (message "executing UART source code block")
   (let* ((ienc (cdr (assoc :ienc params)))
 	 (oenc (cdr (assoc :oenc params)))
@@ -113,10 +115,13 @@ This function is called by `org-babel-execute-src-block'"
 	(buffer-string)))))
 
 (defun ob-uart-listen-filter (proc string)
+  "Filter to process response.
+Argument PROC process.
+Argument STRING response string."
   (if ob-uart-debug
       (message (format "ob-uart got %d bytes" (string-bytes string))))
   (with-current-buffer (format "*%s*" (process-name proc))
-    (insert-string string)))
+    (insert string)))
 
 (provide 'ob-uart)
 ;;; ob-uart.el ends here

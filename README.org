@@ -1,4 +1,4 @@
-#+TITLE: ob-uart -- integrate UART communication into your org documents
+#+TITLE: ob-uart -- integrate UART communication into org documents
 
 * Overview
 
