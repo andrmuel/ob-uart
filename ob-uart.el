@@ -87,7 +87,7 @@ Argument PARAMS UART communication parameters."
      :flowcontrol flowcontrol
      :filter 'ob-uart-listen-filter)
 
-    (if (string= "hex" ienc)
+    (when (string= "hex" ienc)
 	(setq body (mapconcat (lambda (x) (byte-to-string (string-to-number x 16))) (split-string body) "")))
 
     (process-send-string process (concat body lineend))
@@ -102,15 +102,15 @@ Argument PARAMS UART communication parameters."
       (delete-process process)
       (kill-buffer process-buffer)
 
-      (if (string= "hex" oenc)
+      (when (string= "hex" oenc)
 	  (setq result (mapconcat (lambda (x) (format "%02x" x)) (string-to-list result) " ")))
 
-      (if (string= "HEX" oenc)
+      (when (string= "HEX" oenc)
 	  (setq result (mapconcat (lambda (x) (format "%02X" x)) (string-to-list result) " ")))
 
       (with-temp-buffer
 	(insert result)
-	(if (not (string= "raw" oenc))
+	(when (not (string= "raw" oenc))
 	    (fill-region (point-min) (point-max)))
 	(buffer-string)))))
 
@@ -118,7 +118,7 @@ Argument PARAMS UART communication parameters."
   "Filter to process response.
 Argument PROC process.
 Argument STRING response string."
-  (if ob-uart-debug
+  (when ob-uart-debug
       (message (format "ob-uart got %d bytes" (string-bytes string))))
   (with-current-buffer (format "*%s*" (process-name proc))
     (insert string)))
