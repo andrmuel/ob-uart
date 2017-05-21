@@ -36,6 +36,10 @@
 (require 'ob-comint)
 (require 'ob-eval)
 
+(defgroup ob-uart nil
+  "UART support for org babel."
+  :group 'org-babel)
+
 (defcustom ob-uart-debug t
   "Whether to notify in case of new commits."
   :package-version '(ob-uart . "0.0.1")
